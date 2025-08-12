@@ -6,7 +6,7 @@ const transporter = nodemailer.createTransport({
     service: 'Gmail', // You can use other services like SendGrid, Mailgun, etc.
     auth: {
         user: 'sandeshkr07@gmail.com', // Replace with your email
-        pass: 'eeit qxky whfh efvf', // Replace with your app password (not your regular password)
+        pass: '', // Replace with your app password (not your regular password)
     },
 });
 
