@@ -1,21 +1,35 @@
 // utils/sendEmail.js
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
 
-// Create a transporter using your email service (e.g., Gmail)
+// Load environment variables from .env file
+dotenv.config();
+
+// Create transporter using Gmail or any SMTP service
 const transporter = nodemailer.createTransport({
-    service: 'Gmail', // You can use other services like SendGrid, Mailgun, etc.
+    service: 'Gmail', // Can be changed to SendGrid, Mailgun, etc.
     auth: {
-        user: 'sandeshkr07@gmail.com', // Replace with your email
-        pass: 'eeit qxky whfh efvf', // Replace with your app password (not your regular password)
+        user: 'sandeshkr07@gmail.com', // Your email from .env
+        pass: 'mbxz luma zruf mtbb', // App password from .env
     },
 });
 
 // Function to send login notification email
 const sendLoginNotification = async (toEmail, username) => {
-    const loginTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }); // IST timezone
+    // Format login time in IST
+    const loginTime = new Date().toLocaleString('en-GB', {
+        timeZone: 'Asia/Kolkata',
+        hour12: true,
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
 
     const mailOptions = {
-        from: 'sandeshkr07@gmail.com', // Replace with your email
+        from: process.env.EMAIL_USER,
         to: toEmail,
         subject: 'Issue Tracker - Successful Login Notification',
         html: `
@@ -31,9 +45,10 @@ const sendLoginNotification = async (toEmail, username) => {
     try {
         await transporter.sendMail(mailOptions);
         console.log(`Login notification email sent to ${toEmail}`);
+        return true;
     } catch (error) {
         console.error('Error sending login notification email:', error);
-        throw new Error('Failed to send login notification email');
+        return false;
     }
 };
 

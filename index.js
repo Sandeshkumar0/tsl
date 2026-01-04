@@ -9,7 +9,7 @@ const app = express();
 
 // Session middleware
 app.use(session({
-    secret: 'your-secret-key', // Replace with a secure key
+    secret: 'your-secret-key', 
     resave: false,
     saveUninitialized: false,
 }));
