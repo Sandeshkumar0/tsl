@@ -1,54 +1,21 @@
 // controllers/authcontroller.js
-import bcrypt from 'bcrypt';
-import { User, UserRole } from '../model/user.js';
-import { sendLoginNotification } from '../utils/sendEmail.js';
+import { registerUser, loginUser } from '../services/auth.service.js';
 
-const register = async (req, res) => {
-    const { username, email, password, role } = req.body;
-
-    // Validate role
-    if (!Object.values(UserRole).includes(role)) {
-        return res.status(400).send('Invalid role');
-    }
-
+export const register = async (req, res) => {
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        await User.create({
-            username,
-            email,
-            password: hashedPassword,
-            role,
-        });
-        res.redirect('/api/login');
+        await registerUser(req.body);
+        res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
-        res.status(500).send('Error registering user');
+        res.status(400).json({ error: error.message });
     }
 };
 
-const login = async (req, res) => {
-    const { email, password } = req.body;
-
+export const login = async (req, res) => {
     try {
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).send('User not found');
-        }
-
-        const match = await bcrypt.compare(password, user.password);
-        if (!match) {
-            return res.status(400).send('Invalid credentials');
-        }
-
-        // Store user in session
-        req.session.user = user;
-
-        // Send login notification email
-        await sendLoginNotification(user.email, user.username);
-
-        res.redirect('/api');
+        const user = await loginUser(req.body);
+        req.session.user = user; // minimal data only
+        res.status(200).json({ message: 'Login successful' });
     } catch (error) {
-        res.status(500).send('Error logging in');
+        res.status(401).json({ error: error.message });
     }
 };
-
-export { register, login };

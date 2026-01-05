@@ -1,6 +1,6 @@
 // controllers/issuecontroller.js
-import Issue from '../model/issue.js';
-import { User } from '../model/user.js';
+import Issue from '../models/issue.js';
+import { User } from '../models/user.js';
 
 const logIssue = async (req, res) => {
     const { title, description } = req.body;

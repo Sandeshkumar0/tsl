@@ -1,40 +1,43 @@
-// model/user.js
 import mongoose from 'mongoose';
 
-// Define the roles as an object
-const UserRole = {
-    ISSUE_LOGGER: 'Issue Logger',
-    ISSUE_RESOLVER: 'Issue Resolver',
-    ISSUE_VIEWER: 'Issue Viewer',
-    LOGGER_RESOLVER: 'Logger + Resolver',
-};
-
-const userSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address'],
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    role: {
-        type: String,
-        enum: Object.values(UserRole),
-        required: true,
-        default: UserRole.ISSUE_VIEWER,
-    },
-}, {
-    timestamps: true,
+export const UserRole = Object.freeze({
+    ISSUE_LOGGER: 'ISSUE_LOGGER',
+    ISSUE_RESOLVER: 'ISSUE_RESOLVER',
+    ISSUE_VIEWER: 'ISSUE_VIEWER',
+    LOGGER_RESOLVER: 'LOGGER_RESOLVER',
 });
 
-const User = mongoose.model('User', userSchema);
-
-export { User, UserRole };
+const userSchema = new mongoose.Schema(
+    {
+        username: {
+            type: String,
+            required: true,
+            unique: true,
+            trim: true,
+            minlength: 3,
+        },
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+            lowercase: true,
+            trim: true,
+            index: true,
+            match: [/^\S+@\S+\.\S+$/, 'Invalid email format'],
+        },
+        password: {
+            type: String,
+            required: true,
+            select: false, // 🔐 critical
+        },
+        role: {
+            type: String,
+            enum: Object.values(UserRole),
+            default: UserRole.ISSUE_VIEWER,
+        },
+    },
+    {
+        timestamps: true,
+        versionKey: false,
+    }
+);

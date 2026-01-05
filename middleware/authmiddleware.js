@@ -1,5 +1,5 @@
 // middleware/authmiddleware.js
-import { UserRole } from '../model/user.js';
+import { UserRole } from '../models/user.js';
 
 const isAuthenticated = (req, res, next) => {
     if (!req.session.user) {
